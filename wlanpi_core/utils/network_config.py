@@ -91,8 +91,10 @@ def status():
         output = run_command(["sudo", "ip", "netns", "exec", ns_name, "iw", "dev"])
         ns_status = parse_iw_dev_output(output.stdout)
         final_status[ns_name] = ns_status
+        
+    current_cfg = get_current_config()
 
-    return final_status
+    return {"cfg": current_cfg, "status": final_status}
 
 
 def get_config(cfg_id: str) -> NetConfig:
@@ -114,6 +116,12 @@ def get_current_config() -> str:
     if not ccf.exists():
         raise FileNotFoundError("No current configuration set.")
     return ccf.read_text().strip()
+
+def interfaces_in_root(cfg_id: str) -> list[str]:
+    cfg = get_config(cfg_id)
+    
+    root = cfg.roots or []
+    return [r.interface for r in root]
 
 
 def add_config(config: NetConfig) -> bool:
@@ -180,9 +188,10 @@ def activate_config(cfg_id: str, override_active: bool = False) -> bool:
         return True
 
     except Exception as ex:
-        log.error(f"Failed to activate config {cfg_id}: {ex}\nRolling back and deactivating")
-        deactivate_config(cfg_id, override_active=True)
-        raise
+        if cfg_id != "default":
+            log.error(f"Failed to activate config {cfg_id}: {ex}\nRolling back and deactivating")
+            deactivate_config(cfg_id, override_active=True)
+            raise
 
 
 def deactivate_config(cfg_id: str, override_active: bool = False) -> bool:

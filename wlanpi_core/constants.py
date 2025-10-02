@@ -59,6 +59,9 @@ CURRENT_CONFIG_FILE = "/home/wlanpi/.local/share/wlanpi-core/netcfg/current.txt"
 PID_DIR = "/home/wlanpi/.local/share/wlanpi-core/netcfg/pids"
 APPS_FILE = "/home/wlanpi/.local/share/wlanpi-core/netcfg/apps.json"
 WPA_LOG_FILE = "/tmp/wpa.log"
+CREATE_MONITOR_PAIRS_DEFAULT = True
+CREATE_MONITOR_PAIRS_UNINIT = True
+
 
 #### Paths below here are relative to script dir or /tmp fixed paths ###
 
